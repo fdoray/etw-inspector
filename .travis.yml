@@ -1,0 +1,19 @@
+env:
+    - GMOCK_REPO=http://googlemock.googlecode.com/svn/trunk/
+language: cpp
+before_install:
+    # support C++11
+    - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+    - sudo apt-get update -qq
+install:
+    - sudo apt-get install subversion
+    - sudo apt-get install --force-yes -qq g++-4.8
+before_script:
+    - svn checkout $GMOCK_REPO third_party/gmock
+script:
+    - export CXX=g++-4.8
+    - cmake .
+    - make
+    - ./unittests
+compiler:
+    - gcc

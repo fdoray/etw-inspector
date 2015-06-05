@@ -1,5 +1,7 @@
 # ETW Inspector
 
+[![Build Status](https://travis-ci.org/fdoray/etw-inspector.png?branch=master)](https://travis-ci.org/fdoray/etw-inspector)
+
 A tool to ease the analysis of ETW traces.
 
 ## Requirements (third party):

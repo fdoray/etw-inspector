@@ -399,7 +399,7 @@ T ScalarValue<T, TYPE>::MaxValue() {
 template<int TYPE>
 ValueType AggregateValue<TYPE>::GetType() const {
   return static_cast<ValueType>(TYPE);
-};
+}
 
 template<int TYPE>
 bool AggregateValue<TYPE>::IsScalar() const {

@@ -2,8 +2,34 @@ project(etw-inspector CXX)
 cmake_minimum_required(VERSION 2.6.2)
 
 set(CMAKE_SUPPRESS_REGENERATION TRUE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _UNICODE /D UNICODE")
+
+# Force pedantic and Wall flags.
+if(MSVC)
+  # Activate warning level 4.
+  # Disable 4481 warning C4481: nonstandard extension used: override
+  # specifier 'override'
+  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4 /wd4481"
+           CMAKE_CXX_FLAGS
+           "${CMAKE_CXX_FLAGS}")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif()
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wno-long-long -pedantic-errors")
+endif()
+
+# Force a unicode project.
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _UNICODE /D UNICODE")
+endif()
+
+# Add thread library.
+if(MSVC)
+  set(PTHREAD_LIB "")
+else()
+  set(PTHREAD_LIB "pthread")
+endif()
 
 # Find the location of gmock library.
 find_path(GMOCK_FOLDER NAMES gmock/CMakeLists.txt
@@ -53,6 +79,12 @@ target_link_libraries(event
     base
     )
 
+if(MSVC)
+   set(WINDOWS_UNITTEST "")
+else()
+  set(WINDOWS_UNITTEST "")
+endif()
+
 ####################
 # Unit tests
 ####################
@@ -64,6 +96,7 @@ add_executable(unittests
     src/event/event_unittest.cc
     src/event/utils_unittest.cc
     src/event/value_unittest.cc
+    ${WINDOWS_UNITTEST}
     ${GMOCK_ROOT}/gtest/src/gtest-all.cc
     ${GMOCK_ROOT}/src/gmock-all.cc
     ${GMOCK_ROOT}/src/gmock_main.cc
@@ -72,5 +105,6 @@ add_executable(unittests
 target_link_libraries(unittests
     base
     event
+    ${PTHREAD_LIB}
     )
 endif(GMOCK_FOUND)
