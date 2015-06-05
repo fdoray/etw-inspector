@@ -79,6 +79,12 @@ target_link_libraries(event
     base
     )
 
+add_custom_command(TARGET event PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/third_party/debugging_tools/x86/dbghelp.dll $<TARGET_FILE_DIR:event>
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/third_party/debugging_tools/x86/symsrv.dll $<TARGET_FILE_DIR:event>)
+
 if(MSVC)
    set(WINDOWS_UNITTEST "")
 else()
